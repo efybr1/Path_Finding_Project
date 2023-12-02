@@ -115,11 +115,18 @@ int main() {
         vertices.push_back(vertex);
     }
 
-    NodeInputFile.close();
+
+    for (int i =0;i<numTriangles;i++)
+    {
+        printTriangle(triangles[i],0);
+    }
+
+    for (int i =0;i<numVertices;i++)
+    {
+        printVertex(vertices[i]);
+    }
 
 
-    //For triangle 0
-    //printTriangle(triangles[0],numAttributes);
     std::cout<< "Triangle 1 Nodes: " << std::endl;
     for(int i=0;i < triangles[0].nodes.size();i++)
     {

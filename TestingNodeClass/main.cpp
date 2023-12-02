@@ -6,11 +6,11 @@
 //Class to encapsulate the concept of a node
 class Node {
 public:
-    int number; //Node index
+    unsigned int number; //Node index
     double x, y; //x,y position
     std::vector<Node*> connectedNodes; //Connected node pointer array
-    Node(int num, double x_coord, double y_coord):number(num),x(x_coord),y(y_coord){} //Basic constructor to initialise index and coordinates
-    void addConnection(Node* connectedNode)
+    Node(unsigned int num, double x_coord, double y_coord):number(num),x(x_coord),y(y_coord){} //Basic constructor to initialise index and coordinates
+    void setConnection(Node* connectedNode)
     {
         connectedNodes.push_back(connectedNode);
     }
@@ -40,8 +40,8 @@ int main() {
     Node c = Node (3,3,3);
 
     a.print();
-    a.addConnection(&b);
-    a.addConnection(&c);
+    a.setConnection(&b);
+    a.setConnection(&c);
     a.printConnectedNodes();
 
     //The question is how to efficiently parse the ele and node files for the connections.

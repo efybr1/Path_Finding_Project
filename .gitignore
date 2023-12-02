@@ -3,6 +3,7 @@
 #CodeBlocks stuff
 *cbp
 *.layout
+*.depend
 
 #Cmake stuff
 *ilk

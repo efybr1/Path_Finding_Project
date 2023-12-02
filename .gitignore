@@ -2,6 +2,7 @@
 
 #CodeBlocks stuff
 *cbp
+*.layout
 
 #Cmake stuff
 *ilk

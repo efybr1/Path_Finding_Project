@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <utility>
 
 //Class to encapsulate the concept of a node
 class Node {
@@ -43,9 +44,6 @@ public:
     }
 };
 
-//Node needs to have a vector of the edges
-
-
 int main() {
 
     std::ifstream inputEleFile("C:/A_Project/triangle/A.1.ele");
@@ -81,18 +79,50 @@ int main() {
         std::istringstream iss(line);
         unsigned int index;
         double x, y;
-        // Add attributes and boundaryMarker if needed
+
         iss >> index >> x >> y;
+
         // Create a Node object and add it to the vector
         Node newNode(index, x, y);
         nodes.push_back(newNode);
     }
 
-    for(int i=0;i<numVertices;i++)
+    for(unsigned int i=0;i<numVertices;i++)
     {
         nodes[i].print();
     }
 
+    std::vector<std::pair<unsigned int, unsigned int> > nodePairs;
+
+    for (unsigned int i = 0; i < numTriangles; i++)
+        {
+        unsigned int triangleNumber, node1, node2, node3;
+        // Read triangle information
+        inputEleFile >> triangleNumber >> node1 >> node2 >> node3;
+
+        std::pair<unsigned int, unsigned int> pair1(std::min(node1, node2), std::max(node1, node2));
+        std::pair<unsigned int, unsigned int> pair2(std::min(node2, node3), std::max(node2, node3));
+        std::pair<unsigned int, unsigned int> pair3(std::min(node3, node1), std::max(node3, node1));
+
+
+        // Add pairs to the vector
+        nodePairs.push_back(pair1);
+        nodePairs.push_back(pair2);
+        nodePairs.push_back(pair3);
+        }
+
+
+    std::cout << "Node pairs information:" << std::endl;
+    for (unsigned int i = 0; i < numTriangles*3; i++)
+        {
+            //std::cout << "Triangle " << i<< ": ";
+            std::cout<< "Index: " << i << " Nodes: " << nodePairs[i].first << ", " << nodePairs[i].second << std::endl;
+            /*for(int j=0;j<3;j++)
+            {
+                std::cout<< "Nodes: " << nodePairs[i].first << ", " << nodePairs[i]
+            }*/
+
+        }
 
 
 

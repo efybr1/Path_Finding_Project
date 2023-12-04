@@ -11,6 +11,7 @@
 #include <sstream>
 #include <utility>
 #include <algorithm>  // Include for std::sort, std::unique
+#include <math.h>
 
 
 //------------------------Classes------------------------------
@@ -23,36 +24,46 @@ public:
     unsigned int number; //Node index
     double x, y; //x,y position
     std::vector<Node*> connectedNodes; //Connected node pointer array
+    std::vector<double> connectedNodeLengths;//Connected node lengths
 
     //Constructors
     Node(unsigned int num, double x_coord, double y_coord):number(num),x(x_coord),y(y_coord){} //Full constructor to initialise index and coordinates
-
     Node(unsigned int num):number(num){} //Constructor to initialise with only number
 
     //Sets
-    void setConnection(Node* connectedNode)
-    {
+    void setConnection(Node* connectedNode){
         connectedNodes.push_back(connectedNode);
     }
-    void setCoordinates(double x_coord,double y_coord)
-    {
-        x=x_coord;
-        y=y_coord;
+
+    //Utility Functions
+    void calculateEdges() {
+        for (size_t i = 0; i < connectedNodes.size(); i++) {
+            double distance = pythagoras(connectedNodes[i]);
+            connectedNodeLengths.push_back(distance);
+        }
+    }
+    double pythagoras(const Node* connectedNode) const {
+        return std::sqrt(std::pow(connectedNode->x - x, 2) + std::pow(connectedNode->y - y, 2));
     }
 
     //Prints
-    void print()
-    {
+    void printNode(){
         std::cout << "Node number: " << number << ", x:  " << x << ", y: " << y << std::endl;
     }
-    void printConnectedNodes()
-    {
+    void printConnectedNodes(){
         if (connectedNodes.size()>0)
         {
             for(size_t i=0;i<connectedNodes.size();i++)
             {
                 std::cout << "Connected Node: " <<connectedNodes[i]->number << std::endl;
             }
+        }
+    }
+    void printDistancesToConnections(){
+    for (size_t i = 0; i < connectedNodes.size(); i++)
+        {
+        double distance = connectedNodeLengths[i];
+        std::cout << "Distance from node " << number << " to node " << connectedNodes[i]->number << ": " << distance << std::endl;
         }
     }
 };
@@ -107,11 +118,6 @@ int main() {
     }
     nodes.pop_back(); //Remove last line as it is read but does not contain node information (file format)
 
-    for(unsigned int i=0;i<nodes.size();i++)
-    {
-        nodes[i].print();
-    }
-
     //------------------------Read Edges from .ele file as pairs-------------------------//
     //Create a vector of pairs of unsigned ints
     std::vector<std::pair<unsigned int, unsigned int> > nodePairs;
@@ -134,31 +140,11 @@ int main() {
     }
 
     //----------------------Sort Edges and Remove non-unique edges-----------------------//
-
-    std::cout << "Node pairs information:" << std::endl;
-    for (unsigned int i = 0; i < nodePairs.size(); i++)
-        {
-            std::cout<< "Index: " << i+1 << " Nodes: " << nodePairs[i].first << ", " << nodePairs[i].second << std::endl;
-        }
-
     std::sort(nodePairs.begin(), nodePairs.end());
-
-    std::cout << "Node pairs sorted information:" << std::endl;
-    for (unsigned int i = 0; i < nodePairs.size(); i++)
-        {
-            std::cout<< "Index: " << i+1 << " Nodes: " << nodePairs[i].first << ", " << nodePairs[i].second << std::endl;
-        }
-
     // Remove non-unique pairs using std::unique
-    std::vector<std::pair<unsigned int, unsigned int> >::iterator uniqueEnd = std::unique(nodePairs.begin(), nodePairs.end());
+    //std::vector<std::pair<unsigned int, unsigned int> >::iterator is replaced by auto in later c++ versions
+    auto uniqueEnd = std::unique(nodePairs.begin(), nodePairs.end());
     nodePairs.erase(uniqueEnd, nodePairs.end());
-
-
-    std::cout << "Node pairs unique information:" << std::endl;
-    for (unsigned int i = 0; i < nodePairs.size(); i++)
-        {
-            std::cout<< "Index: " << i+1 << " Nodes: " << nodePairs[i].first << ", " << nodePairs[i].second << std::endl;
-        }
 
     //-----------------Add the adjacencies to the nodes using the pairs------------------//
 
@@ -171,23 +157,39 @@ int main() {
 
         if(nodePairs[i].first==number)
         {
-            std::cout << "Add to " << nodePairs[i].first << " node " << nodePairs[i].second << std::endl;
             nodes[nodePairs[i].first-1].setConnection(&nodes[nodePairs[i].second-1]);
             nodes[nodePairs[i].second-1].setConnection(&nodes[nodePairs[i].first-1]);
         }
         else
         {
             number++;
-            std::cout << "Add to " << nodePairs[i].first << " node " << nodePairs[i].second << std::endl;
             nodes[nodePairs[i].first-1].setConnection(&nodes[nodePairs[i].second-1]);
             nodes[nodePairs[i].second-1].setConnection(&nodes[nodePairs[i].first-1]);
         }
     }
+
     for(unsigned int i=0;i<nodes.size();i++)
     {
         std::cout << "Node: " << i+1 << std::endl;
         nodes[i].printConnectedNodes();
         printf("\n");
     }
+
+    //----------------------------Calculate Node Path Lengths----------------------------//
+
+    for(unsigned int i=0;i<nodes.size();i++)
+    {
+        nodes[i].calculateEdges();
+        nodes[i].printDistancesToConnections();
+    }
+
+    //------------------------------------Dijkstra's-------------------------------------//
+
+    //int startnode = 1;
+    //int endnode = 31;
+
+    //std::vector<Node *> visitedNodes;
+
+
     return 0;
 }

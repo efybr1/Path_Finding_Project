@@ -105,8 +105,9 @@ int main() {
         Node newNode(index, x, y);
         nodes.push_back(newNode);
     }
+    nodes.pop_back(); //Remove last line as it is read but does not contain node information (file format)
 
-    for(unsigned int i=0;i<numVertices;i++)
+    for(unsigned int i=0;i<nodes.size();i++)
     {
         nodes[i].print();
     }
@@ -161,31 +162,32 @@ int main() {
 
     //-----------------Add the adjacencies to the nodes using the pairs------------------//
 
+    //As the nodes are in order by number in the nodes array, we can use this to be able to add the adjacencies
+    //Although vectors start indexing from zero and we have 1,2,3... so using number-1
+
     unsigned int number = 1;
     for (unsigned int i = 0; i < nodePairs.size(); i++)
     {
+
         if(nodePairs[i].first==number)
         {
-            //std::cout << "Index: " << i << ", Number: " << number;
-            std::cout << "Add to " << number << " node " << nodePairs[i].second << std::endl;
-            nodes[number-1].setConnection(&nodes[nodePairs[i].second-1]);
+            std::cout << "Add to " << nodePairs[i].first << " node " << nodePairs[i].second << std::endl;
+            nodes[nodePairs[i].first-1].setConnection(&nodes[nodePairs[i].second-1]);
+            nodes[nodePairs[i].second-1].setConnection(&nodes[nodePairs[i].first-1]);
         }
         else
         {
             number++;
-            //std::cout << "Index: " << i << ", Number: " << number;
-            std::cout << "Add to " << number << " node " << nodePairs[i].second << std::endl;
-            nodes[number-1].setConnection(&nodes[nodePairs[i].second-1]);
+            std::cout << "Add to " << nodePairs[i].first << " node " << nodePairs[i].second << std::endl;
+            nodes[nodePairs[i].first-1].setConnection(&nodes[nodePairs[i].second-1]);
+            nodes[nodePairs[i].second-1].setConnection(&nodes[nodePairs[i].first-1]);
         }
-        //std::cout << " Nodes: " << nodePairs[i].first << ", " << nodePairs[i].second << std::endl;
     }
-
     for(unsigned int i=0;i<nodes.size();i++)
     {
-        std::cout << "Node: " << i << std::endl;
+        std::cout << "Node: " << i+1 << std::endl;
         nodes[i].printConnectedNodes();
         printf("\n");
     }
-
     return 0;
 }

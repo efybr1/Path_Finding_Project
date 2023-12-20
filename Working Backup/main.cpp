@@ -1,8 +1,7 @@
 //Ben Richards
 
 //---------------------------------Description-------------------------------------------//
-//Current version of most recent project code
-
+//Testing Dijkstra's naive implementation of Dijkstra's
 
 //----------------------------------Includes---------------------------------------------//
 #include <iostream>
@@ -13,98 +12,11 @@
 #include <algorithm>  // Include for std::sort, std::unique
 #include <math.h>
 
+#include "node.h"
 
-//------------------------Classes------------------------------
-
-//-------------------------------------------------------------
-// Node: Node to encapsulate the data associated with the concept of a node.
-//-------------------------------------------------------------
-class Node {
-public:
-    unsigned int number; //Node index
-    double x, y, shortestPathToNode; //x,y position, also shortest path distance
-    bool visited; //bool to make sure node isn't visited twice, this should be taken out for optimisation
-    Node* prevNode; //Previous node variable to be able to trace shortest path back for output.
-
-    std::vector<Node*> connectedNodes; //Connected node pointer array
-    std::vector<double> connectedNodeLengths;//Connected node lengths
-
-    //Constructor
-    Node(unsigned int num, double x_coord, double y_coord):number(num),x(x_coord),y(y_coord),shortestPathToNode(std::numeric_limits<double>::max()),visited(0),prevNode(nullptr){} //Full constructor to initialise index and coordinates
-
-    //Sets/gets
-    void setConnection(Node* connectedNode){connectedNodes.push_back(connectedNode);}
-    void setShortestPathToNode(double length){shortestPathToNode=length;}
-    void setVisited(){visited=1;}
-
-    unsigned int getNumber(){return(number);}
-
-    // Assignment operator overload
-    Node& operator=(const Node& existingNode) {
-        if (this != &existingNode) {  // If trying to = itself, don't.
-            number = existingNode.number;
-            x = existingNode.x;
-            y = existingNode.y;
-            shortestPathToNode = existingNode.shortestPathToNode;
-            visited = existingNode.visited;
-            prevNode = existingNode.prevNode;
-
-            // Copy connectedNodes vector
-            connectedNodes = existingNode.connectedNodes;
-
-            // Copy connectedNodeLengths vector
-            connectedNodeLengths = existingNode.connectedNodeLengths;
-        }
-        return *this;
-    }
-
-    //Utility Functions
-    void calculateEdges() {
-        for (size_t i = 0; i < connectedNodes.size(); i++) {
-            double distance = pythagoras(connectedNodes[i]);
-            connectedNodeLengths.push_back(distance);
-        }
-    }
-    double pythagoras(const Node* connectedNode) const {
-        return std::sqrt(std::pow(connectedNode->x - x, 2) + std::pow(connectedNode->y - y, 2));
-    }
-    void updateConnectedNodeLengths() {
-        for (size_t i = 0; i < connectedNodes.size(); ++i) {
-            Node* connectedNode = connectedNodes[i];
-            double newLength = shortestPathToNode + connectedNodeLengths[i]; //Calculate length to connected node through this node.
-
-            // Only update if the new length is smaller than the newly calculated value - to maintain shortest path
-            if (newLength < connectedNode->shortestPathToNode) {
-                connectedNode->shortestPathToNode = newLength;
-                connectedNode->prevNode = this;
-            }
-        }
-    }
-
-    //Prints
-    void printNode(){
-        std::cout << "Node number: " << number << ", x:  " << x << ", y: " << y << ", shortest path length: " << shortestPathToNode << ", visited:  "<< visited << std::endl;
-    }
-    void printConnectedNodes(){
-        if (connectedNodes.size()>0)
-        {
-            for(size_t i=0;i<connectedNodes.size();i++)
-            {
-                std::cout << "Connected Node: " <<connectedNodes[i]->number << std::endl;
-            }
-        }
-    }
-    void printDistancesToConnections(){
-    for (size_t i = 0; i < connectedNodes.size(); i++)
-        {
-        double distance = connectedNodeLengths[i];
-        std::cout << "Distance from node " << number << " to node " << connectedNodes[i]->number << ": " << distance << std::endl;
-        }
-    }
-};
-
-    auto shortestPathComparator = [](const Node* a, const Node* b) -> bool {
-        return a->shortestPathToNode < b->shortestPathToNode;
+auto shortestPathComparator = [](const Node* a, const Node* b) -> bool
+{
+    return a->shortestPathToNode < b->shortestPathToNode;
 };
 
 int main() {
@@ -212,11 +124,11 @@ int main() {
     for(unsigned int i=0;i<nodes.size();i++)
     {
         nodes[i].calculateEdges();
-        std::cout << "Node: " << i+1 << std::endl;
+        /*std::cout << "Node: " << i+1 << std::endl;
         nodes[i].printNode();
         nodes[i].printConnectedNodes();
         nodes[i].printDistancesToConnections();
-        printf("\n");
+        printf("\n");*/
     }
 
     //------------------------------------Dijkstra's-------------------------------------//

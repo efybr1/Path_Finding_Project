@@ -40,6 +40,10 @@ unsigned int Node::getNumber() {
     return number;
 }
 
+double Node::getShortestPathToNode(){
+    return shortestPathToNode;
+}
+
 //Utility Functions
 void Node::calculateEdges() {
     for (size_t i = 0; i < connectedNodes.size(); i++) {

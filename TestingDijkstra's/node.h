@@ -7,6 +7,13 @@
 #include <algorithm>   // Include for std::sort, std::unique
 #include <math.h>
 
+
+//TO ADD//
+
+//Private variables (issue with comparator function) along with sets and gets if needed
+//Destructor
+
+
 class Node {
 public:
     unsigned int number; //Node index
@@ -26,6 +33,7 @@ public:
     void setVisited();
 
     unsigned int getNumber();
+    double getShortestPathToNode();
 
     // Assignment operator overload
     Node& operator=(const Node& existingNode);

@@ -153,6 +153,7 @@ int main()
         unvisitedNodes.erase(minNodeIt);
     }
 
+
     // Find and print the path to end node
     std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
     currentNode = &nodes[endNodeNumber - 1];

@@ -17,9 +17,9 @@ int main() {
 //----------------------------------Open files-------------------------------------------//
 
     // File paths as variables as they are used in multiple locations in the program
-    const char* nodeFilePath = "C:/A_Project/A_TestMeshes/Test Square/TestSquare.1.node";
-    const char* eleFilePath = "C:/A_Project/A_TestMeshes/Test Square/TestSquare.1.ele";
-    const char* triFilePath = "C:/A_Project/A_TestMeshes/Test Square/TestSquare.1.tri";
+    const char* nodeFilePath = "C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHoles.1.node";
+    const char* eleFilePath = "C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHoles.1.ele";
+    const char* triFilePath = "C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHoles.1.tri";
 
     //The ele and node file to be added to the tri file
     std::ifstream nodeFile(nodeFilePath);

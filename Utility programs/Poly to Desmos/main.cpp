@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 int main() {
     FILE *input_file, *output_file;
@@ -8,9 +9,9 @@ int main() {
     float x, y;
 
     // Open input node file
-    input_file = fopen("C:/A_Project/A_TestMeshes/Test/Square.1.txt", "r");
+    input_file = fopen("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHolesOutput.txt", "r");
     // Create and open output file
-    output_file = fopen("C:/A_Project/A_TestMeshes/Test/Output.txt", "w");
+    output_file = fopen("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHolesOutputDesmos.txt", "w");
 
 
     if (input_file == NULL) {
@@ -37,10 +38,10 @@ int main() {
         // print the output in the format (x,y) to output file
         fprintf(output_file, "(%f,%f)\n", x, y);
     }
-
-
     fclose(input_file);
     fclose(output_file);
+
+    std::cout << "Conversion successful!" << std::endl;
 
     return 0;
 }

@@ -57,6 +57,7 @@ public:
     // Utility Functions
     void calculateEdges();
     void updateConnectedNodeLengths();
+    void setAllConnectedNodeLengths(double length);
 
     // Prints
     void printNode() const;

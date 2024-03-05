@@ -24,15 +24,24 @@ public:
     // Constructor
     Wrapper(int num, Node* node);
 
+    // Copy constructor
+    Wrapper(const Wrapper& other);
+
+    // Assignment operator overload
+    Wrapper& operator=(const Wrapper& other);
+
     // Gets
     unsigned int getNumber() const;
     Node* getNodePtr() const;
 
     // Utility functions
     void printWrapper() const;
+    void updateNodeWrapperPtr();
 
     //Swapper function for wrappers. Called only from an specialisation of std::swap
     void swap(Wrapper& other);
+
+    void getNodesConnectedNodes();
 };
 
 #endif // WRAPPER_H_INCLUDED

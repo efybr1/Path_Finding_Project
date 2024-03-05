@@ -15,7 +15,29 @@
 // it's associated Node object.
 Wrapper::Wrapper(int num, Node* node) : number(num), nodePtr(node) {
     if (nodePtr)
+    {
         nodePtr->setWrapper(this);
+        //std::cout << "Changed wrapper" << number << "'s node (" << nodePtr->getNumber()<< ") to point to wrapper " << nodePtr->getWrapper()->getNumber() << std::endl;
+    }
+}
+
+Wrapper::Wrapper(const Wrapper& other) : number(other.number), nodePtr(other.nodePtr) {
+    if (nodePtr)
+        nodePtr->setWrapper(this); // Update the associated Node's wrapper pointer to point to this Wrapper
+    //std::cout << "Copy changed wrapper" << number << "'s node (" << nodePtr->getNumber()<< ") to point to wrapper " << nodePtr->getWrapper()->getNumber() << std::endl;
+}
+
+Wrapper& Wrapper::operator=(const Wrapper& other) {
+    if (this != &other)
+        {
+        // Swap the node pointers
+        nodePtr = other.nodePtr;
+        // Update the associated Node's wrapper pointers
+        if (nodePtr){
+            nodePtr->setWrapper(this);//std::cout << "1. Assignment changed wrapper" << number << "'s node (" << nodePtr->getNumber()<< ") to point to wrapper " << nodePtr->getWrapper()->getNumber() << std::endl;
+        }
+        }
+    return *this;
 }
 
 //----------------------------------Sets and Gets----------------------------------------//
@@ -27,6 +49,10 @@ Node* Wrapper::getNodePtr() const {
     return nodePtr;
 }
 //--------------------------------Utility functions--------------------------------------//
+
+void Wrapper::updateNodeWrapperPtr() {
+    nodePtr->setWrapper(this); // Update the associated Node's wrapper pointer to point to this Wrapper
+}
 
 // Print wrapper information, and that of it's associated Node if it has one
 void Wrapper::printWrapper() const {
@@ -47,3 +73,7 @@ void Wrapper::swap(Wrapper& other) {
     std::swap(nodePtr, other.nodePtr);
 }
 
+void Wrapper::getNodesConnectedNodes(){
+
+    std::cout<< "Success!" << std::endl;
+}

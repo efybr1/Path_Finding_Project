@@ -89,6 +89,13 @@ void Node::updateConnectedNodeLengths() {
         }
     }
 }
+void Node::setAllConnectedNodeLengths(double length)
+{
+    for (size_t i=0;i <connectedNodeLengths.size();i++)
+    {
+        connectedNodeLengths[i] = length;
+    }
+}
 
 // Prints
 void Node::printNode() const {

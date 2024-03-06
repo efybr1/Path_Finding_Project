@@ -17,7 +17,6 @@ Wrapper::Wrapper(int num, Node* node) : number(num), nodePtr(node) {
     if (nodePtr)
     {
         nodePtr->setWrapper(this);
-        //std::cout << "Changed wrapper" << number << "'s node (" << nodePtr->getNumber()<< ") to point to wrapper " << nodePtr->getWrapper()->getNumber() << std::endl;
     }
 }
 
@@ -68,12 +67,14 @@ void Wrapper::printWrapper() const {
     std::cout << std::endl;
 }
 
-//Swap function which just swaps the node pointers of two Wrapper objects
-void Wrapper::swap(Wrapper& other) {
-    std::swap(nodePtr, other.nodePtr);
-}
+std::vector<unsigned int> Wrapper::getNodesConnectedNodes() const {
 
-void Wrapper::getNodesConnectedNodes(){
-
-    std::cout<< "Success!" << std::endl;
+    std::vector<unsigned int> connectedNodeNumbers;
+    if (nodePtr) {
+        std::vector<Node*> connectedNodes = nodePtr->getConnectedNodes();
+        for (const auto& connectedNode : connectedNodes) {
+            connectedNodeNumbers.push_back(connectedNode->getNumber());
+        }
+    }
+    return connectedNodeNumbers;
 }

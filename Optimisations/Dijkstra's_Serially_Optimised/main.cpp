@@ -55,7 +55,7 @@ auto compareByShortestPath = [](const Wrapper &a, const Wrapper &b) {
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/02.node");
     if (!NodeInputFile.is_open())
     {
         std::cerr << "Error opening node file!" << std::endl;
@@ -63,7 +63,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/02.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -172,7 +172,6 @@ int main()
     // Convert vector into a priority queue using make_heap
     std::make_heap(pq.begin(), pq.end(), compareByShortestPath);
 
-    nodes[17].setShortestPathToNode(-1);
     //The +4 here would really be found by the number of the wrapper of that node, here we know it is pos 3
     //std::push_heap(pq.begin(), std::distance(pq.begin()), compareByShortestPath); //The +4 is to step the iterator to position 3
 
@@ -180,7 +179,7 @@ int main()
     std::cout << "\n--------------------------------------After--------------------------------------" << std::endl;
     for (unsigned int i = 0; i < pq.size(); ++i)
     {
-        std::cout<< "WN through wrapper: " << pq[i].getNumber() << ". Node's WN through Node pointer: " << pq[i].getNodePtr()->getWrapper()->getNumber() << ". Node number: " << pq[i].getNodePtr()->getNumber() << std::endl;
+        std::cout<< "WN through wrapper: " << pq[i].getNumber() << ". Node's WN: " << pq[i].getNodePtr()->getWrapper()->getNumber() << ". Node number: " << pq[i].getNodePtr()->getNumber() << ", Node's path: " << pq[i].getNodePtr()->getShortestPathToNode() << std::endl;
     }
 
     std::cout << "\n-----------------------------Popping top element------------------------------\n" << std::endl;
@@ -188,14 +187,31 @@ int main()
 
     std::pop_heap(pq.begin(), pq.end(), compareByShortestPath);
     Wrapper topElement = pq.back();
-    topElement.printWrapper();
-    topElement.getNodePtr()->printNode();
-    topElement.getNodePtr()->printConnectedNodes();
-
-
-
-    //topElement.getNodePtr()->updateConnectedNodeLengths();
+    //topElement.printWrapper();
+    //topElement.getNodePtr()->printNode();
+    std::vector<unsigned int> connectedNodes = topElement.getNodesConnectedNodes();
+    topElement.getNodePtr()->setAllConnectedNodesToMin();
+    std::cout << "\nNode's connected nodes:" <<std::endl;
+    for (size_t i = 0; i< connectedNodes.size() ; i++)
+    {
+       std::cout << "Node: " << nodes[connectedNodes[i]-1].getNumber() << "\n" << std::endl;
+    }
     pq.pop_back();
+
+    for (unsigned int i = 0; i < connectedNodes.size(); ++i)
+    {
+        //std::cout << nodes[connectedNodes[i]-1].getWrapper()->getNumber() << std::endl;
+        std::push_heap(pq.begin(),pq.begin()+nodes[connectedNodes[i]-1].getWrapper()->getNumber(),compareByShortestPath);
+    }
+
+    for (unsigned int i = 0; i < pq.size(); ++i)
+    {
+        std::cout<< "WN through wrapper: " << pq[i].getNumber() << ". Node's WN: " << pq[i].getNodePtr()->getWrapper()->getNumber() << ". Node number: " << pq[i].getNodePtr()->getNumber() << ", Node's path: " << pq[i].getNodePtr()->getShortestPathToNode() << std::endl;
+    }
+
+    return 0;
+}
+
 
     /*for(unsigned int i=0;i<5;i++)
     {
@@ -208,5 +224,3 @@ int main()
         std::cout << std::endl;
         pq.pop_back();
     }*/
-    return 0;
-}

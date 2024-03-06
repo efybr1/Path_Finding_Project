@@ -37,11 +37,8 @@ public:
     // Utility functions
     void printWrapper() const;
     void updateNodeWrapperPtr();
+    std::vector<unsigned int> getNodesConnectedNodes() const;
 
-    //Swapper function for wrappers. Called only from an specialisation of std::swap
-    void swap(Wrapper& other);
-
-    void getNodesConnectedNodes();
 };
 
 #endif // WRAPPER_H_INCLUDED

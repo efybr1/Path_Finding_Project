@@ -46,7 +46,9 @@ void Node::setVisited() {
 void Node::setWrapper(Wrapper* wrapper) {
     wrapperPtr = wrapper;
 }
-
+void Node::setTemp(){
+    temp = shortestPathToNode;
+}
 // Gets
 unsigned int Node::getNumber() const {
     return number;
@@ -59,6 +61,9 @@ Node* Node::getPrevNode() const {
 }
 Wrapper* Node::getWrapper() const {
     return wrapperPtr;
+}
+std::vector<Node*> Node::getConnectedNodes() const {
+    return connectedNodes;
 }
 
 //--------------------------------Utility functions--------------------------------------//
@@ -89,11 +94,10 @@ void Node::updateConnectedNodeLengths() {
         }
     }
 }
-void Node::setAllConnectedNodeLengths(double length)
-{
-    for (size_t i=0;i <connectedNodeLengths.size();i++)
-    {
-        connectedNodeLengths[i] = length;
+void Node::setAllConnectedNodesToMin(){
+    for (size_t i = 0; i < connectedNodes.size(); i++) {
+        connectedNodes[i]->setTemp();
+        connectedNodes[i]->setShortestPathToNode(-1);
     }
 }
 

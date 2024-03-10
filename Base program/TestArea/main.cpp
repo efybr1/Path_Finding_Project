@@ -137,7 +137,7 @@ auto shortestPathComparator = [](Node* a, Node* b) -> bool
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/12.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.node");
     if (!NodeInputFile.is_open())
     {
         std::cerr << "Error opening node file!" << std::endl;
@@ -145,7 +145,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/12.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -249,7 +249,6 @@ int main()
     currentNode->setShortestPathToNode(0);
 
     std::clock_t start = std::clock();
-
     while(!unvisitedNodes.empty())
     {
         auto minNodeIt = std::min_element(unvisitedNodes.begin(), unvisitedNodes.end(), shortestPathComparator);
@@ -261,13 +260,13 @@ int main()
     std::clock_t end = std::clock();
 
     // Find and print the path to end node
-    /*
+
     std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
     currentNode = &nodes[endNodeNumber - 1];
     while (currentNode != nullptr) {
     currentNode->printNode();
         currentNode = currentNode->getPrevNode();
-    }*/
+    }
 
     std::cout << "Shortest path length: " << nodes[endNodeNumber - 1].getShortestPathToNode() << std::endl;
     std::cout << "Time: " << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << "s" << '\n';
@@ -275,6 +274,11 @@ int main()
     std::ofstream outputFile("testout.txt");
     outputFile << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << std::endl;
     outputFile.close();
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        nodes[i].printNode();
+    }
 
     return 0;
 }

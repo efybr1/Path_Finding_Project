@@ -17,19 +17,6 @@
 
 #include "wrapper.h"
 
-//Make copy and assignment overloads for wrapper
-//Same as normal but simply swap node pointers
-//Then the Node's need to update the wrapper they point to as well!
-
-/*// Overloaded specialization of std::swap for Wrapper class. Calls member swap function of Wrapper class
-namespace std {
-    template<>void swap(Wrapper& a, Wrapper& b) {
-        a.swap(b);
-        std::cout << "Swap" << std::endl;
-        //Update Node with what wrapper now holds it
-    }
-}*/
-
 //----------------------------------Functions--------------------------------------------//
 
 //---------------------------------------------------------------------------------------//
@@ -55,7 +42,7 @@ auto compareByShortestPath = [](const Wrapper &a, const Wrapper &b) {
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/02.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.node");
     if (!NodeInputFile.is_open())
     {
         std::cerr << "Error opening node file!" << std::endl;
@@ -63,7 +50,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/02.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -157,6 +144,8 @@ int main()
     int endNodeNumber = 17;
     nodes[startNodeNumber-1].setShortestPathToNode(0);
 
+    std::cout << "\n--------------------------------------Input nodes--------------------------------------" << std::endl;
+
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         nodes[i].printNode();
@@ -171,56 +160,84 @@ int main()
 
     // Convert vector into a priority queue using make_heap
     std::make_heap(pq.begin(), pq.end(), compareByShortestPath);
-
-    //The +4 here would really be found by the number of the wrapper of that node, here we know it is pos 3
-    //std::push_heap(pq.begin(), std::distance(pq.begin()), compareByShortestPath); //The +4 is to step the iterator to position 3
-
     // Display information about nodes and their associated wrappers through the wrappers
-    std::cout << "\n--------------------------------------After--------------------------------------" << std::endl;
+    /*std::cout << "\n--------------------------------------After--------------------------------------" << std::endl;
     for (unsigned int i = 0; i < pq.size(); ++i)
     {
         std::cout<< "WN through wrapper: " << pq[i].getNumber() << ". Node's WN: " << pq[i].getNodePtr()->getWrapper()->getNumber() << ". Node number: " << pq[i].getNodePtr()->getNumber() << ", Node's path: " << pq[i].getNodePtr()->getShortestPathToNode() << std::endl;
-    }
-
-    std::cout << "\n-----------------------------Popping top element------------------------------\n" << std::endl;
+    }*/
 
 
-    std::pop_heap(pq.begin(), pq.end(), compareByShortestPath);
-    Wrapper topElement = pq.back();
-    //topElement.printWrapper();
-    //topElement.getNodePtr()->printNode();
-    std::vector<unsigned int> connectedNodes = topElement.getNodesConnectedNodes();
-    topElement.getNodePtr()->setAllConnectedNodesToMin();
-    std::cout << "\nNode's connected nodes:" <<std::endl;
-    for (size_t i = 0; i< connectedNodes.size() ; i++)
+    std::clock_t start = std::clock();
+    for(unsigned int i = 0; i<nodes.size(); i++)
     {
-       std::cout << "Node: " << nodes[connectedNodes[i]-1].getNumber() << "\n" << std::endl;
-    }
-    pq.pop_back();
+
+        std::cout << "\n--------------------------------------Current Heap--------------------------------------" << std::endl;
+        for (unsigned int i = 0; i < pq.size(); ++i)
+        {
+            std::cout<< "WN through wrapper: " << pq[i].getNumber() << ". Node's WN: " << pq[i].getNodePtr()->getWrapper()->getNumber() << ". Node number: " << pq[i].getNodePtr()->getNumber() << ", Node's path: " << pq[i].getNodePtr()->getShortestPathToNode() << std::endl;
+        }
+
+        //std::cout << "\n-----------------------------Popping top element------------------------------\n" << std::endl;
+        std::pop_heap(pq.begin(), pq.end(), compareByShortestPath); //Pop current shortest node
+        Wrapper topElement = pq.back(); //Get the wrapper
+        pq.pop_back(); //Remove the last wrapper - and the node which we won't re-add as it is visited
+        topElement.getNodePtr()->setVisited();
+
+        std::cout << "-----------------------------Cycle: " << i << "------------------------------" << std::endl;
+        topElement.printWrapper();
+        topElement.getNodePtr()->printNode();
+        topElement.getNodePtr()->printConnectedNodes();
+
+
+    std::vector<unsigned int> connectedNodes = topElement.getNodesConnectedNodes(); //Get Node's connected nodes
+    std::cout << std::endl;
 
     for (unsigned int i = 0; i < connectedNodes.size(); ++i)
     {
-        //std::cout << nodes[connectedNodes[i]-1].getWrapper()->getNumber() << std::endl;
-        std::push_heap(pq.begin(),pq.begin()+nodes[connectedNodes[i]-1].getWrapper()->getNumber(),compareByShortestPath);
+        if(nodes[connectedNodes[i]-1].getVisited()==0)
+        {
+            //If the node has not been visited, it will still be on the stack, so must be removed and re-added
+            nodes[connectedNodes[i]-1].setShortestPathToMin(); // Need to use this so the value is stored in temp
+            std::push_heap(pq.begin(),pq.begin()+nodes[connectedNodes[i]-1].getWrapper()->getNumber(),compareByShortestPath); //Moves the node to the top
+            std::pop_heap(pq.begin(), pq.end(), compareByShortestPath); //Moves the node to the last wrapper (back of the vector)
+            Wrapper removed = pq.back();
+            pq.pop_back(); //Removes the last wrapper which now contains the node
+
+
+            topElement.getNodePtr()->updateConnectedNodeLength(i); //Update this connected node's length
+            pq.push_back(removed); //Re add to heap
+            std::push_heap(pq.begin(),pq.end(),compareByShortestPath); //Push it into the correct place
+
+        }
+        else //It has been visited
+        {
+            std::cout << "Node: " << nodes[connectedNodes[i]-1].getNumber() << " has been visited" << std::endl;
+            nodes[connectedNodes[i]-1].updateConnectedNodeLengths();
+        }
+
+    }
+    }
+    std::clock_t end = std::clock();
+
+    std::cout << "\n----------------------------------End state-----------------------------------\n" << std::endl;
+
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        nodes[i].printNode();
     }
 
-    for (unsigned int i = 0; i < pq.size(); ++i)
-    {
-        std::cout<< "WN through wrapper: " << pq[i].getNumber() << ". Node's WN: " << pq[i].getNodePtr()->getWrapper()->getNumber() << ". Node number: " << pq[i].getNodePtr()->getNumber() << ", Node's path: " << pq[i].getNodePtr()->getShortestPathToNode() << std::endl;
+    std::cout << "Shortest path length: " << nodes[endNodeNumber - 1].getShortestPathToNode() << std::endl;
+    std::cout << "Time: " << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << "s" << '\n';
+
+
+    std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
+    Node* currentNode = &nodes[endNodeNumber - 1];
+    while (currentNode != nullptr) {
+    currentNode->printNode();
+        currentNode = currentNode->getPrevNode();
     }
 
     return 0;
 }
-
-
-    /*for(unsigned int i=0;i<5;i++)
-    {
-        std::pop_heap(pq.begin(), pq.end(), compareByShortestPath);
-        Wrapper topElement = pq.back();
-        std::cout << "Popped smallest wrapper information: ";
-        topElement.printWrapper();
-        std::cout << "Popped smallest node information: ";
-        topElement.getNodePtr()->printNode();
-        std::cout << std::endl;
-        pq.pop_back();
-    }*/

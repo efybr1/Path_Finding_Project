@@ -9,7 +9,7 @@ int main() {
     float x, y;
 
     // Open input node file
-    input_file = fopen("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHolesOutput.txt", "r");
+    input_file = fopen("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01basepoly.txt", "r");
     // Create and open output file
     output_file = fopen("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHolesOutputDesmos.txt", "w");
 

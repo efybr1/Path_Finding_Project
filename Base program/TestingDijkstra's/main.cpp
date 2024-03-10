@@ -8,8 +8,113 @@
 #include <fstream>
 #include <sstream>
 #include <math.h>
-#include "node.h"
-#include "node.cpp"
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>   // Include for std::sort, std::unique
+#include <ctime>
+
+class Node {
+private:
+
+    unsigned int number; //Node index
+    double x,y, shortestPathToNode; //x, y position, also shortest path distance
+    bool visited; //bool to make sure node isn't visited twice, this should be taken out for optimization
+    Node* prevNode; //Previous node variable to be able to trace the shortest path back for output.
+
+    std::vector<Node*> connectedNodes; //Connected node pointer array
+    std::vector<double> connectedNodeLengths; //Connected node lengths
+
+    double pythagoras(const Node* connectedNode) const {
+        return std::sqrt(std::pow(connectedNode->x - x, 2) + std::pow(connectedNode->y - y, 2));
+    }
+
+public:
+
+    //Constructor
+    Node(unsigned int num, double x_coord, double y_coord): number(num), x(x_coord), y(y_coord), shortestPathToNode(std::numeric_limits<double>::max()), visited(false), prevNode(nullptr) {};
+    // Copy constructor assignment operator overload
+    Node& operator=(const Node& existingNode){
+        if (this != &existingNode) {  // If trying to = itself, don't.
+            number = existingNode.number;
+            x = existingNode.x;
+            y = existingNode.y;
+            shortestPathToNode = existingNode.shortestPathToNode;
+            visited = existingNode.visited;
+            prevNode = existingNode.prevNode;
+
+            // Copy connectedNodes vector
+            connectedNodes = existingNode.connectedNodes;
+
+            // Copy connectedNodeLengths vector
+            connectedNodeLengths = existingNode.connectedNodeLengths;
+        }
+        return *this;
+    }
+
+    //Sets
+    void setConnection(Node* connectedNode){
+        connectedNodes.push_back(connectedNode);
+    }
+    void setShortestPathToNode(double length){
+        shortestPathToNode = length;
+    }
+    void setVisited(){
+        visited = true;
+    }
+    //Gets
+    unsigned int getNumber(){
+        return number;
+    }
+    double getShortestPathToNode(){
+        return shortestPathToNode;
+    }
+    Node* getPrevNode(){
+    return prevNode;
+    }
+
+    //Utility Functions
+    void calculateEdges() {
+        for (size_t i = 0; i < connectedNodes.size(); i++) {
+            double distance = pythagoras(connectedNodes[i]);
+            connectedNodeLengths.push_back(distance);
+        }
+    }
+     void updateConnectedNodeLengths() {
+        for (size_t i = 0; i < connectedNodes.size(); ++i) {
+            Node* connectedNode = connectedNodes[i];
+            double newLength = shortestPathToNode + connectedNodeLengths[i]; //Calculate length to connected node through this node.
+
+            // Only update if the new length is smaller than the newly calculated value - to maintain the shortest path
+            if (newLength < connectedNode->shortestPathToNode) {
+                connectedNode->shortestPathToNode = newLength;
+                connectedNode->prevNode = this;
+            }
+        }
+    }
+
+
+    //Prints
+    void printNode() {
+    std::cout << "Node number: " << number << ", x:  " << x << ", y: " << y << ", shortest path length: " << shortestPathToNode << ", visited:  " << visited << std::endl;
+}
+    void printConnectedNodes(){
+    if (connectedNodes.size() > 0) {
+        for (size_t i = 0; i < connectedNodes.size(); i++) {
+            std::cout << "Connected Node: " << connectedNodes[i]->number << std::endl;
+        }
+    }
+}
+    void printDistancesToConnections(){
+    for (size_t i = 0; i < connectedNodes.size(); i++) {
+        double distance = connectedNodeLengths[i];
+        std::cout << "Distance from node " << number << " to node " << connectedNodes[i]->number << ": " << distance << std::endl;
+    }
+}
+};
+
+
+
 
 //----------------------------------Functions--------------------------------------------//
 
@@ -18,9 +123,9 @@
 //---------------------------------------------------------------------------------------//
 
 // Function used to compare two nodes. Returns boolean of whether a is < b
-auto shortestPathComparator = [](const Node* a, const Node* b) -> bool
+auto shortestPathComparator = [](Node* a, Node* b) -> bool
 {
-    return a->shortestPathToNode < b->shortestPathToNode;
+    return a->getShortestPathToNode() < b->getShortestPathToNode();
 };
 
 //---------------------------------------------------------------------------------------//
@@ -32,7 +137,7 @@ auto shortestPathComparator = [](const Node* a, const Node* b) -> bool
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/A_Project/Project Meshes/BigSquareThreeHoles.1.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.node");
     if (!NodeInputFile.is_open())
     {
         std::cerr << "Error opening node file!" << std::endl;
@@ -40,7 +145,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/A_Project/Project Meshes/BigSquareThreeHoles.1.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -64,11 +169,10 @@ void readNodes(std::vector<Node>& nodes)
         unsigned int index;
         double x, y;
         iss >> index >> x >> y;
-
         Node newNode(index, x, y);
         nodes.push_back(newNode);
     }
-    nodes.pop_back(); // Remove last line as it is read but does not contain node information (file format)
+    nodes.pop_back(); // Remove last line as it is read but does not contain node information (file format has text on the last line)
 
     //Read first line of .ele file for segment/edge parameters
     unsigned int numTriangles, nodesPerTriangle, numAttributes;
@@ -130,7 +234,7 @@ int main()
 
     //Start and End node
     int startNodeNumber = 1;
-    int endNodeNumber = 8000;
+    int endNodeNumber = 17;
 
     //Get pointers to all the nodes in the unvisitedNodes array
     std::vector<Node *> unvisitedNodes;
@@ -144,6 +248,7 @@ int main()
     currentNode = &nodes[startNodeNumber-1];
     currentNode->setShortestPathToNode(0);
 
+    std::clock_t start = std::clock();
     while(!unvisitedNodes.empty())
     {
         auto minNodeIt = std::min_element(unvisitedNodes.begin(), unvisitedNodes.end(), shortestPathComparator);
@@ -152,17 +257,28 @@ int main()
         currentNode->updateConnectedNodeLengths();
         unvisitedNodes.erase(minNodeIt);
     }
-
+    std::clock_t end = std::clock();
 
     // Find and print the path to end node
+
     std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
     currentNode = &nodes[endNodeNumber - 1];
     while (currentNode != nullptr) {
-        currentNode->printNode();
-        currentNode = currentNode->prevNode;
+    currentNode->printNode();
+        currentNode = currentNode->getPrevNode();
     }
 
     std::cout << "Shortest path length: " << nodes[endNodeNumber - 1].getShortestPathToNode() << std::endl;
+    std::cout << "Time: " << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << "s" << '\n';
+
+    std::ofstream outputFile("testout.txt");
+    outputFile << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << std::endl;
+    outputFile.close();
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        nodes[i].printNode();
+    }
 
     return 0;
 }

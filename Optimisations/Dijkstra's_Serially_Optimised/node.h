@@ -47,12 +47,13 @@ public:
     // Sets
     void setConnection(Node* connectedNode);
     void setShortestPathToNode(double length);
+    void setShortestPathToMin();
     void setVisited();
     void setWrapper(Wrapper* wrapper);
-    void setTemp();
 
     // Gets
     unsigned int getNumber() const;
+    bool getVisited() const;
     double getShortestPathToNode() const;
     Node* getPrevNode() const;
     Wrapper* getWrapper() const;
@@ -61,7 +62,7 @@ public:
     // Utility Functions
     void calculateEdges();
     void updateConnectedNodeLengths();
-    void setAllConnectedNodesToMin();
+    void updateConnectedNodeLength(unsigned int index);
 
     // Prints
     void printNode() const;

@@ -58,11 +58,11 @@ void Wrapper::printWrapper() const {
     std::cout << "Wrapper number: " << number;
     if (nodePtr != nullptr)
         {
-        std::cout << ", Associated Node number: " << nodePtr->getNumber();
+        //std::cout << ", Associated Node number: " << nodePtr->getNumber();
         }
     else
         {
-        std::cout << ", No associated Node";
+        //std::cout << ", No associated Node";
         }
     std::cout << std::endl;
 }

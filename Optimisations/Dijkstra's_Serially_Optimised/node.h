@@ -53,6 +53,8 @@ public:
 
     // Gets
     unsigned int getNumber() const;
+    double getX() const;
+    double getY() const;
     bool getVisited() const;
     double getShortestPathToNode() const;
     Node* getPrevNode() const;

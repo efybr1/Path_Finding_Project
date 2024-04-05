@@ -42,15 +42,15 @@ auto compareByShortestPath = [](const Wrapper &a, const Wrapper &b) {
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/04.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/Investigating Quality/1mil.node");
     if (!NodeInputFile.is_open())
     {
-        std::cout<< "Error opening node file!" << std::endl;
+        std::cerr << "Error opening node file!" << std::endl;
         exit(1);
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/04.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/Investigating Quality/1mil.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -128,65 +128,6 @@ void readNodes(std::vector<Node>& nodes)
     }
 }
 
-void outputFile(const std::vector<Node>& nodes)
-{
-    //Open output file
-    std::ofstream outputFile("pslg_output.txt");
-    if (!outputFile.is_open()) {
-        std::cerr << "Error opening output file!" << std::endl;
-        return;
-    }
-
-    //Output nodes
-    //First line
-    outputFile << nodes.size() << " " << 2 << " " << 0 << std::endl;
-    //All nodes
-    for (const auto& node : nodes)
-    {
-        outputFile << node.getNumber() << " " << node.getX() << " " << node.getY() << std::endl;
-    }
-
-    //Output edges/segments
-    //First line
-    std::vector<std::pair<unsigned int, unsigned int>> segments;
-    //Find all segments
-    for (Node node : nodes)
-    {
-        unsigned int currentNodeNumber = node.getNumber();
-        std::vector<Node*> connectedNodes = node.getConnectedNodes();
-
-        //Iterate through connected nodes
-        for (Node* connectedNode : connectedNodes)
-        {
-            unsigned int connectedNodeNumber = connectedNode->getNumber();
-
-            // Add all segments to the vector
-            if (currentNodeNumber < connectedNodeNumber)
-            {
-                segments.emplace_back(std::min(currentNodeNumber, connectedNodeNumber), std::max(currentNodeNumber, connectedNodeNumber));
-            }
-        }
-    }
-
-    //Sort segments vector
-    std::sort(segments.begin(), segments.end());
-
-    //Remove duplicates with unique and erase, similar to file read in
-    segments.erase(std::unique(segments.begin(), segments.end()), segments.end());
-
-    outputFile << segments.size() << " " << 2 << " " << 1 << std::endl;
-
-    //Output unique segments with identifying number
-    unsigned int seg_number = 1;
-    for (const auto& segment : segments)
-    {
-        outputFile << seg_number << " " << segment.first << " " << segment.second << " " << 0 <<std::endl;
-        seg_number++;
-    }
-
-    outputFile.close();
-    std::cout << "PSLG segments have been written to pslg_output.txt" << std::endl;
-}
 
 
 int main()
@@ -196,10 +137,11 @@ int main()
     std::vector<Node> nodes;
     readNodes(nodes);
 
-    ------------------------------------Dijkstra's-------------------------------------//
+    //------------------------------------Dijkstra's-------------------------------------//
 
     //Start and End node
     int startNodeNumber = 1;
+    int endNodeNumber = 17;
     nodes[startNodeNumber-1].setShortestPathToNode(0);
 
     //std::cout << "\n--------------------------------------Input nodes--------------------------------------" << std::endl;
@@ -218,13 +160,12 @@ int main()
 
     // Convert vector into a priority queue using make_heap
     std::make_heap(pq.begin(), pq.end(), compareByShortestPath);
-
     // Display information about nodes and their associated wrappers through the wrappers
     //std::cout << "\n--------------------------------------After--------------------------------------" << std::endl;
-    for (unsigned int i = 0; i < pq.size(); ++i)
+    /*for (unsigned int i = 0; i < pq.size(); ++i)
     {
         std::cout<< "WN through wrapper: " << pq[i].getNumber() << ". Node's WN: " << pq[i].getNodePtr()->getWrapper()->getNumber() << ". Node number: " << pq[i].getNodePtr()->getNumber() << ", Node's path: " << pq[i].getNodePtr()->getShortestPathToNode() << std::endl;
-    }
+    }*/
 
 
     std::clock_t start = std::clock();
@@ -287,21 +228,16 @@ int main()
         nodes[i].printNode();
     }*/
 
-    int endNodeNumber = 17;
-    //std::cout << "Enter the end node number: ";
-    //std::cin >> endNodeNumber;
-
     std::cout << "Shortest path length: " << nodes[endNodeNumber - 1].getShortestPathToNode() << std::endl;
     std::cout << "Time: " << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << "s" << '\n';
 
-    /*std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
-    Node* currentNode = &nodes[endNodeNumber - 1];
+
+    //std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
+    /*Node* currentNode = &nodes[endNodeNumber - 1];
     while (currentNode != nullptr) {
     currentNode->printNode();
         currentNode = currentNode->getPrevNode();
     }*/
-
-    outputFile(nodes);
 
     return 0;
 }

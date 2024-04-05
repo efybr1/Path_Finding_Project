@@ -16,7 +16,6 @@
 
 class Node {
 private:
-
     unsigned int number; //Node index
     double x,y, shortestPathToNode; //x, y position, also shortest path distance
     bool visited; //bool to make sure node isn't visited twice, this should be taken out for optimization
@@ -63,14 +62,23 @@ public:
         visited = true;
     }
     //Gets
-    unsigned int getNumber(){
+    unsigned int getNumber() const{
         return number;
+    }
+    double getX() const{
+        return x;
+    }
+    double getY() const{
+        return y;
     }
     double getShortestPathToNode(){
         return shortestPathToNode;
     }
     Node* getPrevNode(){
     return prevNode;
+    }
+    const std::vector<Node*>& getConnectedNodes() const {
+        return connectedNodes;
     }
 
     //Utility Functions
@@ -92,7 +100,6 @@ public:
             }
         }
     }
-
 
     //Prints
     void printNode() {
@@ -137,7 +144,7 @@ auto shortestPathComparator = [](Node* a, Node* b) -> bool
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/04.node");
     if (!NodeInputFile.is_open())
     {
         std::cerr << "Error opening node file!" << std::endl;
@@ -145,7 +152,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/01.1.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/04.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -223,6 +230,66 @@ void readNodes(std::vector<Node>& nodes)
     }
 }
 
+void outputFile(const std::vector<Node>& nodes)
+{
+    //Open output file
+    std::ofstream outputFile("pslg_output.txt");
+    if (!outputFile.is_open()) {
+        std::cerr << "Error opening output file!" << std::endl;
+        return;
+    }
+
+    //Output nodes
+    //First line
+    outputFile << nodes.size() << " " << 2 << " " << 0 << std::endl;
+    //All nodes
+    for (const auto& node : nodes)
+    {
+        outputFile << node.getNumber() << " " << node.getX() << " " << node.getY() << std::endl;
+    }
+
+    //Output edges/segments
+    //First line
+    std::vector<std::pair<unsigned int, unsigned int>> segments;
+    //Find all segments
+    for (Node node : nodes)
+    {
+        unsigned int currentNodeNumber = node.getNumber();
+        std::vector<Node*> connectedNodes = node.getConnectedNodes();
+
+        //Iterate through connected nodes
+        for (Node* connectedNode : connectedNodes)
+        {
+            unsigned int connectedNodeNumber = connectedNode->getNumber();
+
+            // Add all segments to the vector
+            if (currentNodeNumber < connectedNodeNumber)
+            {
+                segments.emplace_back(std::min(currentNodeNumber, connectedNodeNumber), std::max(currentNodeNumber, connectedNodeNumber));
+            }
+        }
+    }
+
+    //Sort segments vector
+    std::sort(segments.begin(), segments.end());
+
+    //Remove duplicates with unique and erase, similar to file read in
+    segments.erase(std::unique(segments.begin(), segments.end()), segments.end());
+
+    outputFile << segments.size() << " " << 2 << " " << 1 << std::endl;
+
+    //Output unique segments with identifying number
+    unsigned int seg_number = 1;
+    for (const auto& segment : segments)
+    {
+        outputFile << seg_number << " " << segment.first << " " << segment.second << " " << 0 <<std::endl;
+        seg_number++;
+    }
+
+    outputFile.close();
+    std::cout << "PSLG segments have been written to pslg_output.txt" << std::endl;
+}
+
 int main()
 {
 
@@ -248,37 +315,35 @@ int main()
     currentNode = &nodes[startNodeNumber-1];
     currentNode->setShortestPathToNode(0);
 
+    //Perform Dijkstra's shortest path algorithm
     std::clock_t start = std::clock();
     while(!unvisitedNodes.empty())
     {
+        //Find unvisited node with shortest path length
         auto minNodeIt = std::min_element(unvisitedNodes.begin(), unvisitedNodes.end(), shortestPathComparator);
         currentNode = *minNodeIt;
         currentNode->setVisited();
+        //Update the path lengths of the current node's connected nodes
         currentNode->updateConnectedNodeLengths();
+        //Remove the current node from the unvisited nodes vector
         unvisitedNodes.erase(minNodeIt);
     }
     std::clock_t end = std::clock();
 
     // Find and print the path to end node
-
     std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
     currentNode = &nodes[endNodeNumber - 1];
     while (currentNode != nullptr) {
-    currentNode->printNode();
+        currentNode->printNode();
         currentNode = currentNode->getPrevNode();
     }
+
 
     std::cout << "Shortest path length: " << nodes[endNodeNumber - 1].getShortestPathToNode() << std::endl;
     std::cout << "Time: " << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << "s" << '\n';
 
-    std::ofstream outputFile("testout.txt");
-    outputFile << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << std::endl;
-    outputFile.close();
-
-    for (size_t i = 0; i < nodes.size(); ++i)
-    {
-        nodes[i].printNode();
-    }
+    // Output PSLG to a file
+    outputFile(nodes);
 
     return 0;
 }

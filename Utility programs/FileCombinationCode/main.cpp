@@ -17,9 +17,9 @@ int main() {
 //----------------------------------Open files-------------------------------------------//
 
     // File paths as variables as they are used in multiple locations in the program
-    const char* nodeFilePath = "C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHoles.1.node";
-    const char* eleFilePath = "C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHoles.1.ele";
-    const char* triFilePath = "C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/SquareThreeHoles.1.tri";
+    const char* nodeFilePath = "C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/03.node";
+    const char* eleFilePath = "C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/03.ele";
+    const char* triFilePath = "C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/03.tri";
 
     //The ele and node file to be added to the tri file
     std::ifstream nodeFile(nodeFilePath);
@@ -29,17 +29,17 @@ int main() {
     //If any didn't open, stop the program
     if (!nodeFile.is_open())
     {
-        std::cerr << "Error opening input file." << std::endl;
+        std::cout << "Error opening input file." << std::endl;
         return 1;
     }
     if (!eleFile.is_open())
     {
-        std::cerr << "Error opening eleFile file." << std::endl;
+        std::cout << "Error opening eleFile file." << std::endl;
         return 1;
     }
     if (!triFile.is_open())
     {
-        std::cerr << "Error opening output file." << std::endl;
+        std::cout << "Error opening output file." << std::endl;
         return 1;
     }
 

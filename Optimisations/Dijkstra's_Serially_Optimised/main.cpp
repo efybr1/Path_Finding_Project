@@ -196,7 +196,7 @@ int main()
     std::vector<Node> nodes;
     readNodes(nodes);
 
-    ------------------------------------Dijkstra's-------------------------------------//
+    //------------------------------------Dijkstra's-------------------------------------//
 
     //Start and End node
     int startNodeNumber = 1;

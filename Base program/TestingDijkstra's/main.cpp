@@ -144,7 +144,7 @@ auto shortestPathComparator = [](Node* a, Node* b) -> bool
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/Banana/Banana99922.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/09.node");
     if (!NodeInputFile.is_open())
     {
         std::cerr << "Error opening node file!" << std::endl;
@@ -152,7 +152,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/Banana/Banana99922.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/09.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -230,7 +230,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 }
 
-void outputFile(const std::vector<Node>& nodes)
+void outputFile(std::vector<Node>& nodes, unsigned int endNodeNumberIn)
 {
     //Open output file
     std::ofstream outputFile("pslg_output.txt");
@@ -251,6 +251,7 @@ void outputFile(const std::vector<Node>& nodes)
     //Output edges/segments
     //First line
     std::vector<std::pair<unsigned int, unsigned int>> segments;
+
     //Find all segments
     for (Node node : nodes)
     {
@@ -276,13 +277,31 @@ void outputFile(const std::vector<Node>& nodes)
     //Remove duplicates with unique and erase, similar to file read in
     segments.erase(std::unique(segments.begin(), segments.end()), segments.end());
 
+    //Output file dimensions as per PSLG file format: Number of segments, dimensions (2) and characteristics (1, colour)
     outputFile << segments.size() << " " << 2 << " " << 1 << std::endl;
 
     //Output unique segments with identifying number
     unsigned int seg_number = 1;
-    for (const auto& segment : segments)
+    Node* currentNode = &nodes[endNodeNumberIn - 1];
+
+    //For each semgent
+    for (auto& segment : segments)
     {
-        outputFile << seg_number << " " << segment.first << " " << segment.second << " " << 0 <<std::endl;
+        bool isSegmentOnShortestPath = false;
+
+        // Check if both nodes of the segment lie on the shortest path
+        Node* node1 = &nodes[segment.first - 1];
+        Node* node2 = &nodes[segment.second - 1];
+        currentNode = &nodes[endNodeNumberIn - 1];
+        while (currentNode != nullptr) {
+            if ((currentNode == node1 && currentNode->getPrevNode() == node2) || (currentNode == node2 && currentNode->getPrevNode() == node1)) {
+                isSegmentOnShortestPath = true;
+                break;
+            }
+            currentNode = currentNode->getPrevNode();
+        }
+
+        outputFile << seg_number << " " << segment.first << " " << segment.second << " " << isSegmentOnShortestPath << std::endl;
         seg_number++;
     }
 
@@ -343,7 +362,7 @@ int main()
     std::cout << "Time: " << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << "s" << '\n';
 
     // Output PSLG to a file
-    outputFile(nodes);
+    outputFile(nodes,endNodeNumber);
 
     return 0;
 }

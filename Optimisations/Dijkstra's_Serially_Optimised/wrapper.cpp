@@ -34,7 +34,7 @@ Wrapper& Wrapper::operator=(const Wrapper& other) {
         // Update the associated Node's wrapper pointers
         if (nodePtr){
             nodePtr->setWrapper(this);//std::cout << "1. Assignment changed wrapper" << number << "'s node (" << nodePtr->getNumber()<< ") to point to wrapper " << nodePtr->getWrapper()->getNumber() << std::endl;
-        }
+            }
         }
     return *this;
 }

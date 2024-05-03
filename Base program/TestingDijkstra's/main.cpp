@@ -144,7 +144,7 @@ auto shortestPathComparator = [](Node* a, Node* b) -> bool
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/04.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/Banana/Banana99922.node");
     if (!NodeInputFile.is_open())
     {
         std::cerr << "Error opening node file!" << std::endl;
@@ -152,7 +152,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/SquareThreeHoles/04.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/Banana/Banana99922.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -301,7 +301,7 @@ int main()
 
     //Start and End node
     int startNodeNumber = 1;
-    int endNodeNumber = 17;
+    int endNodeNumber = 7;
 
     //Get pointers to all the nodes in the unvisitedNodes array
     std::vector<Node *> unvisitedNodes;
@@ -331,12 +331,12 @@ int main()
     std::clock_t end = std::clock();
 
     // Find and print the path to end node
-    std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
+    /*std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
     currentNode = &nodes[endNodeNumber - 1];
     while (currentNode != nullptr) {
         currentNode->printNode();
         currentNode = currentNode->getPrevNode();
-    }
+    }*/
 
 
     std::cout << "Shortest path length: " << nodes[endNodeNumber - 1].getShortestPathToNode() << std::endl;

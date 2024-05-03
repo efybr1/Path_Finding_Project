@@ -144,7 +144,7 @@ auto shortestPathComparator = [](Node* a, Node* b) -> bool
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/09.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/04.node");
     if (!NodeInputFile.is_open())
     {
         std::cerr << "Error opening node file!" << std::endl;
@@ -152,7 +152,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/09.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/04.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -233,7 +233,7 @@ void readNodes(std::vector<Node>& nodes)
 void outputFile(std::vector<Node>& nodes, unsigned int endNodeNumberIn)
 {
     //Open output file
-    std::ofstream outputFile("09.plsg");
+    std::ofstream outputFile("Checking.plsg");
     if (!outputFile.is_open()) {
         std::cerr << "Error opening output file!" << std::endl;
         return;
@@ -298,9 +298,9 @@ void outputFile(std::vector<Node>& nodes, unsigned int endNodeNumberIn)
                 isSegmentOnShortestPath = true;
                 break;
             }
+            //Else
             currentNode = currentNode->getPrevNode();
         }
-
         outputFile << seg_number << " " << segment.first << " " << segment.second << " " << isSegmentOnShortestPath << std::endl;
         seg_number++;
     }
@@ -320,7 +320,7 @@ int main()
 
     //Start and End node
     int startNodeNumber = 1;
-    int endNodeNumber = 7;
+    int endNodeNumber = 17;
 
     //Get pointers to all the nodes in the unvisitedNodes array
     std::vector<Node *> unvisitedNodes;

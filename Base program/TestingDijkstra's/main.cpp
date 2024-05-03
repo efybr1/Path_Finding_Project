@@ -233,7 +233,7 @@ void readNodes(std::vector<Node>& nodes)
 void outputFile(std::vector<Node>& nodes, unsigned int endNodeNumberIn)
 {
     //Open output file
-    std::ofstream outputFile("pslg_output.txt");
+    std::ofstream outputFile("09.plsg");
     if (!outputFile.is_open()) {
         std::cerr << "Error opening output file!" << std::endl;
         return;
@@ -306,7 +306,7 @@ void outputFile(std::vector<Node>& nodes, unsigned int endNodeNumberIn)
     }
 
     outputFile.close();
-    std::cout << "PSLG segments have been written to pslg_output.txt" << std::endl;
+    std::cout << "PSLG segments have been written to pslg_output.plsg" << std::endl;
 }
 
 int main()

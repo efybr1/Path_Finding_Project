@@ -14,7 +14,6 @@
 //------------------------------------Includes-------------------------------------------//
 #include "node.h"
 
-
 class Wrapper {
 private:
     unsigned int number; // Unique identifier

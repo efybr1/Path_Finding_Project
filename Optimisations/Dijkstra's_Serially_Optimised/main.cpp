@@ -5,17 +5,17 @@
 
 //----------------------------------Includes---------------------------------------------//
 
-#include <fstream>
+#include <fstream> //Used for file inputs and outputs
 #include <sstream>
-#include <math.h>
-#include <iostream>
-#include <vector>
-#include <utility>
-#include <algorithm>   // Include for std::sort, std::unique
-#include <ctime>
-#include <queue>
+#include <math.h> //Used for calculations of path lengths
+#include <iostream> //Used from output to command window
+#include <vector> //Used for data structures
+#include <utility> //Utility functions
+#include <algorithm>  // Include for std::sort, std::unique
+#include <ctime> // Include for std::sort, std::unique
+#include <queue> //Included for queue class
 
-#include "wrapper.h"
+#include "wrapper.h" //Wrapper class
 
 //----------------------------------Functions--------------------------------------------//
 
@@ -42,7 +42,7 @@ auto compareByShortestPath = [](const Wrapper &a, const Wrapper &b) {
 void readNodes(std::vector<Node>& nodes)
 {
     //Open the .node file for vertices
-    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/12.node");
+    std::ifstream NodeInputFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/04.node");
     if (!NodeInputFile.is_open())
     {
         std::cout<< "Error opening node file!" << std::endl;
@@ -50,7 +50,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 
     //Open the .ele file for segments
-    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/12.ele");
+    std::ifstream inputEleFile("C:/Users/richa/OneDrive - The University of Nottingham/Documents/A_Year 4 EEC/A_Project/Meshes/MainProgramTestMeshes/04.ele");
     if (!inputEleFile.is_open())
     {
         std::cout << "Error opening the ele file." << std::endl;
@@ -128,26 +128,15 @@ void readNodes(std::vector<Node>& nodes)
     }
 }
 
+//Function to output a file showing the shortest path found by the program on the input mesh
 void outputFile(std::vector<Node>& nodes, unsigned int endNodeNumberIn)
 {
-
-    /*std::cout << "\nShortest path to Node "<< endNodeNumberIn <<":\n";
-    Node* currentNode = &nodes[endNodeNumberIn - 1];
-    while (currentNode != nullptr) {
-    currentNode->printNode();
-        currentNode = currentNode->getPrevNode();
-    }*/
-
-
-
     // Open output file
-    std::ofstream outputFile("Checking 12 optimised.plsg");
+    std::ofstream outputFile("FinalTest.plsg");
     if (!outputFile.is_open()) {
         std::cerr << "Error opening output file!" << std::endl;
         return;
     }
-
-
 
     // Output nodes
     // First line
@@ -224,7 +213,7 @@ void outputFile(std::vector<Node>& nodes, unsigned int endNodeNumberIn)
     }
 
     outputFile.close();
-    std::cout << "PSLG segments have been written to pslg_output.plsg" << std::endl;
+    std::cout << "PSLG segments have been written to output file" << std::endl;
 
 }
 
@@ -240,14 +229,10 @@ int main()
 
     //Start and End node
     int startNodeNumber = 1;
+    int endNodeNumber = 17;
     nodes[startNodeNumber-1].setShortestPathToNode(0);
 
     //std::cout << "\n--------------------------------------Input nodes--------------------------------------" << std::endl;
-
-    /*for (size_t i = 0; i < nodes.size(); ++i)
-    {
-        nodes[i].printNode();
-    }*/
 
     // Create a vector of Wrapper objects, one for each node
     std::vector<Wrapper> pq;
@@ -259,79 +244,45 @@ int main()
     // Convert vector into a priority queue using make_heap
     std::make_heap(pq.begin(), pq.end(), compareByShortestPath);
 
-    // Display information about nodes and their associated wrappers through the wrappers
-    //std::cout << "\n--------------------------------------Heap Structure--------------------------------------" << std::endl;
-    /*for (unsigned int i = 0; i < pq.size(); ++i)
-    {
-        std::cout<< "WN through wrapper: " << pq[i].getNumber() << ". Node's WN: " << pq[i].getNodePtr()->getWrapper()->getNumber() << ". Node number: " << pq[i].getNodePtr()->getNumber() << ", Node's path: " << pq[i].getNodePtr()->getShortestPathToNode() << std::endl;
-    }*/
-
+    //Start timing
     std::clock_t start = std::clock();
     for(unsigned int i = 0; i<nodes.size(); i++)
     {
-
-        //std::cout << "\n-------------------------------------Current Heap-------------------------------------" << std::endl;
-        /*for (unsigned int i = 0; i < pq.size(); ++i)
-        {
-            std::cout<< "WN through wrapper: " << pq[i].getNumber() << ". Node's WN: " << pq[i].getNodePtr()->getWrapper()->getNumber() << ". Node number: " << pq[i].getNodePtr()->getNumber() << ", Node's path: " << pq[i].getNodePtr()->getShortestPathToNode() << std::endl;
-        }*/
-
-        //std::cout << "\n---------------------------------Popping top element----------------------------------\n" <<std::endl;
         std::pop_heap(pq.begin(), pq.end(), compareByShortestPath); //Pop current shortest node
         Wrapper topElement = pq.back(); //Get the wrapper
         pq.pop_back(); //Remove the last wrapper - and the node which we won't re-add as it is visited
-        topElement.getNodePtr()->setVisited();
+        topElement.getNodePtr()->setVisited(); //Set node to visited
+        std::vector<unsigned int> connectedNodes = topElement.getNodesConnectedNodes(); //Get Node's connected nodes
 
-        //std::cout << "---------------------------------------Cycle: " << i << "---------------------------------------" << std::endl;
-        //topElement.printWrapper();
-        //topElement.getNodePtr()->printNode();
-        //topElement.getNodePtr()->printConnectedNodes();
-
-
-    std::vector<unsigned int> connectedNodes = topElement.getNodesConnectedNodes(); //Get Node's connected nodes
-
-    for (unsigned int i = 0; i < connectedNodes.size(); ++i)  //If the node has not been visited, it will still be on the stack, so must be removed and re-added
-    {
-        if(nodes[connectedNodes[i]-1].getVisited()==0)
+        for (unsigned int i = 0; i < connectedNodes.size(); ++i)
         {
-            nodes[connectedNodes[i]-1].setShortestPathToMin(); // Need to use this so the value is stored in temp
-            std::push_heap(pq.begin(),pq.begin()+nodes[connectedNodes[i]-1].getWrapper()->getNumber(),compareByShortestPath); //Moves the node to the top
-            std::pop_heap(pq.begin(), pq.end(), compareByShortestPath); //Moves the node to the last wrapper (back of the vector)
-            Wrapper removed = pq.back();
-            pq.pop_back(); //Removes the last wrapper which now contains the node
+            if(nodes[connectedNodes[i]-1].getVisited()==0) //If the connected node has not been visited, it will still be on the stack, so must be removed and re-added
+            {
+                nodes[connectedNodes[i]-1].setShortestPathToMin(); // Need to use this so the value is stored in temp
+                std::push_heap(pq.begin(),pq.begin()+nodes[connectedNodes[i]-1].getWrapper()->getNumber(),compareByShortestPath); //Moves the node to the top
+                std::pop_heap(pq.begin(), pq.end(), compareByShortestPath); //Moves the node to the last wrapper (back of the vector)
+                Wrapper removed = pq.back();
+                pq.pop_back(); //Removes the last wrapper which now contains the node
 
-            topElement.getNodePtr()->updateConnectedNodeLength(i); //Update this connected node's length
-            pq.push_back(removed); //Re add to heap
-            std::push_heap(pq.begin(),pq.end(),compareByShortestPath); //Push it into the correct place
+                topElement.getNodePtr()->updateConnectedNodeLength(i); //Update this connected node's length
+                pq.push_back(removed); //Re add to heap
+                std::push_heap(pq.begin(),pq.end(),compareByShortestPath); //Push it into the correct place
 
+            }
+            else //It has been visited, so simply update value if smaller but do not re-add
+                {
+                    nodes[connectedNodes[i]-1].updateConnectedNodeLengths();
+                }
         }
-    else //It has been visited
-        {
-            //std::cout << "Node: " << nodes[connectedNodes[i]-1].getNumber() << " has been visited" << std::endl;
-            nodes[connectedNodes[i]-1].updateConnectedNodeLengths();
-        }
-
-    }
     }
     std::clock_t end = std::clock();
-
-    //std::cout << "\n----------------------------------End state-----------------------------------\n" << std::endl;
-
-
-    /*for (size_t i = 0; i < nodes.size(); ++i)
-    {
-        nodes[i].printNode();
-    }*/
-
-    int endNodeNumber = 17;
-    //std::cout << "Enter the end node number: ";
-    //std::cin >> endNodeNumber;
 
     std::cout << "\n--------------------------------------Dijkstra's using priority queue--------------------------------------" << std::endl;
 
     std::cout << "Shortest path length: " << nodes[endNodeNumber - 1].getShortestPathToNode() << std::endl;
     std::cout << "Time: " << (double)(((end - start) / (double)CLOCKS_PER_SEC)) << "s" << '\n';
 
+    // Find and print the path to end node. This debug code is included as it may be useful for future developers
     /*std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
     Node* currentNode = &nodes[endNodeNumber - 1];
     while (currentNode != nullptr) {

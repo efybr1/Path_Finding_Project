@@ -20,12 +20,14 @@ Wrapper::Wrapper(int num, Node* node) : number(num), nodePtr(node) {
     }
 }
 
+//Standard copy constructor to create a copy of the object, making sure to maintain the wrapper-node link
 Wrapper::Wrapper(const Wrapper& other) : number(other.number), nodePtr(other.nodePtr) {
     if (nodePtr)
         nodePtr->setWrapper(this); // Update the associated Node's wrapper pointer to point to this Wrapper
-    //std::cout << "Copy changed wrapper" << number << "'s node (" << nodePtr->getNumber()<< ") to point to wrapper " << nodePtr->getWrapper()->getNumber() << std::endl;
 }
 
+//This allows for the ovveride of the std::swap function to only swap the node pointers
+//When Node A is set = to node B, all that happens is the node pointers are swapped and their wrapper-node links updated
 Wrapper& Wrapper::operator=(const Wrapper& other) {
     if (this != &other)
         {
@@ -33,7 +35,7 @@ Wrapper& Wrapper::operator=(const Wrapper& other) {
         nodePtr = other.nodePtr;
         // Update the associated Node's wrapper pointers
         if (nodePtr){
-            nodePtr->setWrapper(this);//std::cout << "1. Assignment changed wrapper" << number << "'s node (" << nodePtr->getNumber()<< ") to point to wrapper " << nodePtr->getWrapper()->getNumber() << std::endl;
+            nodePtr->setWrapper(this);
             }
         }
     return *this;
@@ -58,15 +60,15 @@ void Wrapper::printWrapper() const {
     std::cout << "Wrapper number: " << number;
     if (nodePtr != nullptr)
         {
-        //std::cout << ", Associated Node number: " << nodePtr->getNumber();
+        std::cout << ", Associated Node number: " << nodePtr->getNumber();
         }
     else
         {
-        //std::cout << ", No associated Node";
+        std::cout << ", No associated Node";
         }
     std::cout << std::endl;
 }
-
+//Return connected nodes
 std::vector<unsigned int> Wrapper::getNodesConnectedNodes() const {
 
     std::vector<unsigned int> connectedNodeNumbers;

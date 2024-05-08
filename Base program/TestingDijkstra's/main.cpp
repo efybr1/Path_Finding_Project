@@ -1,18 +1,24 @@
 // Ben Richards
 
 //---------------------------------Description-------------------------------------------//
-// Testing Dijkstra's naive implementation of Dijkstra's
+// Base program 'naive' implementation of Dijkstra's shortest path algorithm
 
 //----------------------------------Includes---------------------------------------------//
 
-#include <fstream>
+#include <fstream> //Used for file inputs and outputs
 #include <sstream>
-#include <math.h>
-#include <iostream>
-#include <vector>
-#include <utility>
+#include <math.h> //Used for calculations of path lengths
+#include <iostream> //Used from output to command window
+#include <vector> //Used for data structures
+#include <utility> //Utility functions
 #include <algorithm>   // Include for std::sort, std::unique
-#include <ctime>
+#include <ctime> //Used for timing
+
+
+// Class to encapsulate the concept of a Node for creating a weighted map for Dijkstra's to
+// solve. The class contains the unique identifier, coordinates, the Node's current shortest
+// path from the designated start node, the location of the Node before it in this shortest
+// path, and all the associated standard and utility functions.
 
 class Node {
 private:
@@ -24,6 +30,7 @@ private:
     std::vector<Node*> connectedNodes; //Connected node pointer array
     std::vector<double> connectedNodeLengths; //Connected node lengths
 
+    //Private function as this is not used outside of the class
     double pythagoras(const Node* connectedNode) const {
         return std::sqrt(std::pow(connectedNode->x - x, 2) + std::pow(connectedNode->y - y, 2));
     }
@@ -230,6 +237,7 @@ void readNodes(std::vector<Node>& nodes)
     }
 }
 
+//Function to output a file showing the shortest path found by the program on the input mesh
 void outputFile(std::vector<Node>& nodes, unsigned int endNodeNumberIn)
 {
     //Open output file
@@ -306,7 +314,7 @@ void outputFile(std::vector<Node>& nodes, unsigned int endNodeNumberIn)
     }
 
     outputFile.close();
-    std::cout << "PSLG segments have been written to pslg_output.plsg" << std::endl;
+    std::cout << "PSLG segments have been written to output file" << std::endl;
 }
 
 int main()
@@ -349,7 +357,7 @@ int main()
     }
     std::clock_t end = std::clock();
 
-    // Find and print the path to end node
+    // Find and print the path to end node. This debug code is included as it may be useful for future developers
     /*std::cout << "\nShortest path to Node "<< endNodeNumber <<":\n";
     currentNode = &nodes[endNodeNumber - 1];
     while (currentNode != nullptr) {

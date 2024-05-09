@@ -1,3 +1,10 @@
+//---------------------------------------------------------------------------------------//
+//Program to output mesh nodes as desmos coordinates for viewing
+//Ben Richards
+
+//---------------------------------Description-------------------------------------------//
+//Program simply takes the (x,y) of each node and writes them to an output file
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>

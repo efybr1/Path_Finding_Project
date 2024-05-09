@@ -4,6 +4,6 @@ Ben Richards <br />
 2023/2024 <br />
 
 Repo contains: <br />
-Base and serially optimised version of Dijkstra's algirithm <br />
-Utility functions <br />
+Base and serially optimised version of Dijkstra's algorithm <br />
+Utility programs <br />
 Testing areas for the classes
